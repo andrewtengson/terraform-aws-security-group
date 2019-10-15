@@ -179,6 +179,50 @@ resource "aws_security_group_rule" "computed_ingress_with_source_security_group_
   )
 }
 
+resource "aws_security_group_rule" "ingress_with_named_security_group_rules" {
+  for_each = var.create ? var.ingress_with_named_security_group_rules : {}
+
+  security_group_id = local.this_sg_id
+  type              = "ingress"
+
+  source_security_group_id = var.ingress_with_named_security_group_rules[each.key]["source_security_group_id"]
+  ipv6_cidr_blocks         = var.ingress_ipv6_cidr_blocks
+  prefix_list_ids          = var.ingress_prefix_list_ids
+  description = lookup(
+    var.ingress_with_named_security_group_rules[each.key],
+    "description",
+    "Ingress Rule",
+  )
+
+  from_port = lookup(
+    var.ingress_with_named_security_group_rules[each.key],
+    "from_port",
+    var.rules[lookup(
+      var.ingress_with_named_security_group_rules[each.key],
+      "rule",
+      "_",
+    )][0],
+  )
+  to_port = lookup(
+    var.ingress_with_named_security_group_rules[each.key],
+    "to_port",
+    var.rules[lookup(
+      var.ingress_with_named_security_group_rules[each.key],
+      "rule",
+      "_",
+    )][1],
+  )
+  protocol = lookup(
+    var.ingress_with_named_security_group_rules[each.key],
+    "protocol",
+    var.rules[lookup(
+      var.ingress_with_named_security_group_rules[each.key],
+      "rule",
+      "_",
+    )][2],
+  )
+}
+
 # Security group rules with "cidr_blocks", but without "ipv6_cidr_blocks", "source_security_group_id" and "self"
 resource "aws_security_group_rule" "ingress_with_cidr_blocks" {
   count = var.create ? length(var.ingress_with_cidr_blocks) : 0
@@ -553,6 +597,50 @@ resource "aws_security_group_rule" "computed_egress_with_source_security_group_i
     "protocol",
     var.rules[lookup(
       var.computed_egress_with_source_security_group_id[count.index],
+      "rule",
+      "_",
+    )][2],
+  )
+}
+
+resource "aws_security_group_rule" "egress_with_named_security_group_rules" {
+  for_each = var.create ? var.egress_with_named_security_group_rules : {}
+
+  security_group_id = local.this_sg_id
+  type              = "egress"
+
+  source_security_group_id = var.egress_with_named_security_group_rules[each.key]["source_security_group_id"]
+  ipv6_cidr_blocks         = var.egress_ipv6_cidr_blocks
+  prefix_list_ids          = var.egress_prefix_list_ids
+  description = lookup(
+    var.egress_with_named_security_group_rules[each.key],
+    "description",
+    "egress Rule",
+  )
+
+  from_port = lookup(
+    var.egress_with_named_security_group_rules[each.key],
+    "from_port",
+    var.rules[lookup(
+      var.egress_with_named_security_group_rules[each.key],
+      "rule",
+      "_",
+    )][0],
+  )
+  to_port = lookup(
+    var.egress_with_named_security_group_rules[each.key],
+    "to_port",
+    var.rules[lookup(
+      var.egress_with_named_security_group_rules[each.key],
+      "rule",
+      "_",
+    )][1],
+  )
+  protocol = lookup(
+    var.egress_with_named_security_group_rules[each.key],
+    "protocol",
+    var.rules[lookup(
+      var.egress_with_named_security_group_rules[each.key],
       "rule",
       "_",
     )][2],

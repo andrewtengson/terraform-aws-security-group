@@ -68,6 +68,12 @@ variable "ingress_with_source_security_group_id" {
   default     = []
 }
 
+variable "ingress_with_named_security_group_rules" {
+  description = "Map of named security group ingress rules to create"
+  type        = map(map(string))
+  default     = {}
+}
+
 variable "ingress_cidr_blocks" {
   description = "List of IPv4 CIDR ranges to use on all ingress rules"
   type        = list(string)
@@ -183,6 +189,12 @@ variable "egress_with_source_security_group_id" {
   description = "List of egress rules to create where 'source_security_group_id' is used"
   type        = list(map(string))
   default     = []
+}
+
+variable "egress_with_named_security_group_rules" {
+  description = "Map of named security group egress rules to create"
+  type        = map(map(string))
+  default     = {}
 }
 
 variable "egress_cidr_blocks" {
